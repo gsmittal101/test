@@ -13,11 +13,14 @@
       background-color: #f0f0f0;
       font-family: Arial, sans-serif;
     }
-	 h1 {
+
+    h1 {
       font-weight: bold;
       color: #333;
       margin-bottom: 20px;
+      font-size: 3em;
     }
+
     .play-button {
       background-color: #28a745;
       border: none;
@@ -43,46 +46,68 @@
     #image-container {
       margin-top: 30px;
       display: none;
+      position: relative;
     }
 
-    #image-container img {
-      max-width: 300px;
+    #clickable-wrapper {
+      position: relative;
+      display: inline-block;
       cursor: pointer;
+    }
+
+    #clickable-image {
+      max-width: 300px;
+      display: block;
+    }
+
+    .overlay-play-icon {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 60px;
+      height: 60px;
+      fill: white;
+      opacity: 0.9;
+      pointer-events: none;
     }
   </style>
 </head>
 <body>
-       <h1 style="font-size: 3em;">Let's Start the FUN..</h1>
+  <h1>Let's Start the FUN..</h1>
 
-  <!-- Button with Play Icon -->
+  <!-- Green Play Button -->
   <button class="play-button" onclick="showImage()">
-    <!-- Play Icon as SVG -->
     <svg class="play-icon" viewBox="0 0 24 24">
       <path d="M8 5v14l11-7z"/>
     </svg>
   </button>
 
-  <!-- Hidden Image Initially -->
+  <!-- Image and Overlay Icon -->
   <div id="image-container">
-    <img id="clickable-image" src="" alt="Click to Play Audio">
+    <div id="clickable-wrapper">
+      <img id="clickable-image" src="" alt="Click to Play Audio">
+      <svg class="overlay-play-icon" viewBox="0 0 24 24">
+        <path d="M8 5v14l11-7z"/>
+      </svg>
+    </div>
   </div>
 
-  <!-- Hidden Audio -->
+  <!-- Audio Player -->
   <audio id="audio-player" src=""></audio>
 
   <script>
     function showImage() {
       const img = document.getElementById("clickable-image");
-      img.src = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS-bsyKe8_4-ydTlECxGvBnOn6yEKeLQ0NNn1XtNFJOVBIKN9GVKGVocYvdj_dAbSCdKHw&usqp=CAU"; // <- Put your local image path here
+      img.src = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS-bsyKe8_4-ydTlECxGvBnOn6yEKeLQ0NNn1XtNFJOVBIKN9GVKGVocYvdj_dAbSCdKHw&usqp=CAU";
       document.getElementById("image-container").style.display = "block";
     }
 
-    document.getElementById("clickable-image").addEventListener("click", function () {
+    document.getElementById("clickable-wrapper").addEventListener("click", function () {
       const audio = document.getElementById("audio-player");
-      audio.src = "https://raw.githubusercontent.com/gsmittal101/test/main/Audio.mp3"; // <- Put your local audio path here
+      audio.src = "https://raw.githubusercontent.com/gsmittal101/test/main/Audio.mp3";
       audio.play();
     });
   </script>
-
 </body>
 </html>
