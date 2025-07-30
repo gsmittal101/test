@@ -60,7 +60,7 @@
       display: block;
     }
 
-    .overlay-play-icon {
+    .overlay-icon {
       position: absolute;
       top: 50%;
       left: 50%;
@@ -77,37 +77,55 @@
   <h1>Let's Start the FUN..</h1>
 
   <!-- Green Play Button -->
-  <button class="play-button" onclick="showImage()">
+  <button class="play-button" id="main-play-button" onclick="showImage()">
     <svg class="play-icon" viewBox="0 0 24 24">
       <path d="M8 5v14l11-7z"/>
     </svg>
   </button>
 
-  <!-- Image and Overlay Icon -->
+  <!-- Image with overlay icon -->
   <div id="image-container">
     <div id="clickable-wrapper">
       <img id="clickable-image" src="" alt="Click to Play Audio">
-      <svg class="overlay-play-icon" viewBox="0 0 24 24">
+      <svg id="overlay-icon" class="overlay-icon" viewBox="0 0 24 24">
+        <!-- Initial Play Icon -->
         <path d="M8 5v14l11-7z"/>
       </svg>
     </div>
   </div>
 
-  <!-- Audio Player -->
+  <!-- Hidden Audio -->
   <audio id="audio-player" src=""></audio>
 
   <script>
+    let isPlaying = false;
+
     function showImage() {
+      // Set the image
       const img = document.getElementById("clickable-image");
       img.src = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS-bsyKe8_4-ydTlECxGvBnOn6yEKeLQ0NNn1XtNFJOVBIKN9GVKGVocYvdj_dAbSCdKHw&usqp=CAU";
+
+      // Show the image container
       document.getElementById("image-container").style.display = "block";
-     document.getElementById("main-play-button").style.display = "none";
+
+      // Hide the green button
+      document.getElementById("main-play-button").style.display = "none";
     }
 
     document.getElementById("clickable-wrapper").addEventListener("click", function () {
       const audio = document.getElementById("audio-player");
-      audio.src = "https://raw.githubusercontent.com/gsmittal101/test/main/Audio.mp3";
-      audio.play();
+      const overlayIcon = document.getElementById("overlay-icon");
+
+      if (!isPlaying) {
+        audio.src = "https://raw.githubusercontent.com/gsmittal101/test/main/Audio.mp3";
+        audio.play();
+        overlayIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>'; // Pause icon
+        isPlaying = true;
+      } else {
+        audio.pause();
+        overlayIcon.innerHTML = '<path d="M8 5v14l11-7z"/>'; // Play icon
+        isPlaying = false;
+      }
     });
   </script>
 </body>
