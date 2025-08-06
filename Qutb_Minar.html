@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>START THE FUN</title>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background-color: #f0f0f0;
+      font-family: Arial, sans-serif;
+    }
+
+    h1 {
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 20px;
+      font-size: 3em;
+    }
+
+    .play-button {
+      background-color: #28a745;
+      border: none;
+      border-radius: 30px;
+      padding: 30px 50px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .play-button:hover {
+      background-color: #218838;
+    }
+
+    .play-icon {
+      width: 35px;
+      height: 40px;
+      fill: white;
+    }
+
+    #image-container {
+      margin-top: 30px;
+      display: none;
+      position: relative;
+    }
+
+    #clickable-wrapper {
+      position: relative;
+      display: inline-block;
+      cursor: pointer;
+    }
+
+    #clickable-image {
+      max-width: 300px;
+      display: block;
+    }
+
+    .overlay-icon {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 60px;
+      height: 60px;
+      fill: white;
+      opacity: 0.9;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>Let's Start the FUN..</h1>
+
+  <!-- Green Play Button -->
+  <button class="play-button" id="main-play-button" onclick="showImage()">
+    <svg class="play-icon" viewBox="0 0 24 24">
+      <path d="M8 5v14l11-7z"/>
+    </svg>
+  </button>
+
+  <!-- Image with overlay icon -->
+  <div id="image-container">
+    <div id="clickable-wrapper">
+      <img id="clickable-image" src="" alt="Click to Play Audio">
+      <svg id="overlay-icon" class="overlay-icon" viewBox="0 0 24 24">
+        <!-- Initial Play Icon -->
+        <path d="M8 5v14l11-7z"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Hidden Audio -->
+  <audio id="audio-player" src=""></audio>
+
+  <script>
+    let isPlaying = false;
+
+    function showImage() {
+      // Set the image
+      const img = document.getElementById("clickable-image");
+      img.src = "https://media.gettyimages.com/id/109864184/photo/auckland-skyline-with-sky-tower.jpg?s=612x612&w=gi&k=20&c=lOILOPSercdRDBy0x83oajAil9HKBT4XLffhfNcilhM=";
+
+      // Show the image container
+      document.getElementById("image-container").style.display = "block";
+
+      // Hide the green button
+      document.getElementById("main-play-button").style.display = "none";
+    }
+
+    document.getElementById("clickable-wrapper").addEventListener("click", function () {
+      const audio = document.getElementById("audio-player");
+      const overlayIcon = document.getElementById("overlay-icon");
+
+      if (!isPlaying) {
+        audio.src = "https://raw.githubusercontent.com/gsmittal101/test/main/Audio.mp3";
+        audio.play();
+        overlayIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>'; // Pause icon
+        isPlaying = true;
+      } else {
+        audio.pause();
+        overlayIcon.innerHTML = '<path d="M8 5v14l11-7z"/>'; // Play icon
+        isPlaying = false;
+      }
+    });
+  </script>
+</body>
+</html>
