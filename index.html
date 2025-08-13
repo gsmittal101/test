@@ -1,17 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>START THE FUN</title>
   <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
+
     body {
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
       height: 100vh;
       background-color: #f0f0f0;
       font-family: Arial, sans-serif;
+    }
+
+    .container {
+      text-align: center;
     }
 
     h1 {
@@ -25,110 +33,223 @@
       background-color: #28a745;
       border: none;
       border-radius: 30px;
-      padding: 30px 50px;
+      padding: 20px 40px;
       cursor: pointer;
       transition: background-color 0.3s ease;
-      display: flex;
+      display: inline-flex;
       align-items: center;
       justify-content: center;
+      margin-bottom: 20px;
     }
 
     .play-button:hover {
       background-color: #218838;
     }
 
-    .play-icon {
-      width: 35px;
-      height: 40px;
-      fill: white;
-    }
-
+    /* New layout: image + language buttons side-by-side */
     #image-container {
-      margin-top: 30px;
-      display: none;
-      position: relative;
-    }
-
-    #clickable-wrapper {
-      position: relative;
-      display: inline-block;
-      cursor: pointer;
-    }
-
-    #clickable-image {
-      max-width: 300px;
+      margin-top: 10px;
       display: block;
     }
 
-    .overlay-icon {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 60px;
-      height: 60px;
-      fill: white;
-      opacity: 0.9;
-      pointer-events: none;
+    .media-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 24px; /* space between image and buttons */
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    #clickable-image {
+      max-width: 360px;
+      width: 100%;
+      height: auto;
+      border-radius: 10px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+      object-fit: cover;
+      display: block;
+      user-select: none;
+      -webkit-user-drag: none;
+      pointer-events: none; /* make sure image doesn't respond to clicks */
+    }
+
+    /* Buttons column beside image */
+    .lang-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      align-items: stretch;
+    }
+
+    .lang-btn {
+      background: linear-gradient(180deg, #3aa0ff 0%, #1e90ff 100%);
+      color: #fff;
+      border: none;
+      padding: 14px 22px;
+      border-radius: 12px;
+      font-size: 1.05rem;
+      cursor: pointer;
+      box-shadow: 0 6px 14px rgba(30,144,255,0.18);
+      transition: transform 0.12s ease, box-shadow 0.12s ease;
+      text-align: center;
+    }
+
+    .lang-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 24px rgba(30,144,255,0.22);
+    }
+
+    .lang-btn:active {
+      transform: translateY(0);
+    }
+
+    /* Small status text */
+    #status {
+      margin-top: 12px;
+      color: #555;
+      font-size: 0.95rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 720px) {
+      .media-wrapper {
+        flex-direction: column;
+      }
+      .lang-buttons {
+        flex-direction: row;
+        gap: 10px;
+      }
+      .lang-btn { flex: 1; }
     }
   </style>
 </head>
 <body>
-  <h1>Let's Start the FUN..</h1>
+  <div class="container">
+    <h1>Let's Start the FUN..</h1>
 
-  <!-- Green Play Button -->
-  <button class="play-button" id="main-play-button" onclick="showImage()">
-    <svg class="play-icon" viewBox="0 0 24 24">
-      <path d="M8 5v14l11-7z"/>
-    </svg>
-  </button>
-
-  <!-- Image with overlay icon -->
-  <div id="image-container">
-    <div id="clickable-wrapper">
-      <img id="clickable-image" src="" alt="Click to Play Audio">
-      <svg id="overlay-icon" class="overlay-icon" viewBox="0 0 24 24">
-        <!-- Initial Play Icon -->
-        <path d="M8 5v14l11-7z"/>
+    <!-- original green play button (kept for initial action if you want) -->
+    <button class="play-button" id="main-play-button" onclick="showImage()">
+      <svg class="play-icon" viewBox="0 0 24 24" width="28" height="28" aria-hidden="true">
+        <path d="M8 5v14l11-7z" fill="white"/>
       </svg>
+    </button>
+
+    <!-- Image + Language Buttons -->
+    <div id="image-container" style="display:none;">
+      <div class="media-wrapper">
+        <!-- Image: no overlay/play/pause -->
+        <img id="clickable-image" src="" alt="Image for audio playback">
+
+        <!-- Language buttons beside image -->
+        <div class="lang-buttons" role="group" aria-label="Language audio controls">
+          <!-- Put your mp3 path in data-src or set later via JS -->
+          <button class="lang-btn" id="btn-english" data-src="">
+            English
+          </button>
+          <button class="lang-btn" id="btn-hindi" data-src="">
+            Hindi
+          </button>
+          <button class="lang-btn" id="btn-chinese" data-src="">
+            Chinese
+          </button>
+        </div>
+      </div>
+
+      <div id="status" aria-live="polite"></div>
     </div>
+
+    <!-- single audio player used by the three buttons -->
+    <audio id="audio-player" preload="none"></audio>
   </div>
 
-  <!-- Hidden Audio -->
-  <audio id="audio-player" src=""></audio>
-
   <script>
-    let isPlaying = false;
+    // State to track playback
+    const audio = document.getElementById('audio-player');
+    let currentSrc = '';
 
+    // Show image when main button clicked
     function showImage() {
-      // Set the image
-      const img = document.getElementById("clickable-image");
+      const img = document.getElementById('clickable-image');
       img.src = "https://lh3.googleusercontent.com/gps-cs-s/AC9h4nqinWbCfrGKnBvXEgWbQISbUgadaxik9GMutUhCPm_UxeGRbbZE7j7cfKbU__HtJjO7oSGqLbhXhaadjfIDH_h4autJlMl8tjFiQd5aaZGw3VoQXYzSodh3DDGWFh13d5vxhYwwxQ=s1360-w1360-h1020-rw";
 
-      // Show the image container
-      document.getElementById("image-container").style.display = "block";
-
-      // Hide the green button
-      document.getElementById("main-play-button").style.display = "none";
+      // Show container and hide the green button
+      document.getElementById('image-container').style.display = 'block';
+      document.getElementById('main-play-button').style.display = 'none';
     }
 
-    document.getElementById("clickable-wrapper").addEventListener("click", function () {
-      const audio = document.getElementById("audio-player");
-      const overlayIcon = document.getElementById("overlay-icon");
+    // Utility: set status text
+    function setStatus(text) {
+      const status = document.getElementById('status');
+      status.textContent = text || '';
+    }
 
-      if (!isPlaying) {
-        audio.src = "https://raw.githubusercontent.com/gsmittal101/test/main/qutab_Minar.mp3";
-        audio.play();
-        overlayIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>'; // Pause icon
-        isPlaying = true;
-      } else {
-        audio.pause();
-        overlayIcon.innerHTML = '<path d="M8 5v14l11-7z"/>'; // Play icon
-        isPlaying = false;
-      }
+    // Wire up the language buttons
+    function setupLangButtons() {
+      const btnEnglish = document.getElementById('btn-english');
+      const btnHindi = document.getElementById('btn-hindi');
+      const btnChinese = document.getElementById('btn-chinese');
+
+      const buttons = [btnEnglish, btnHindi, btnChinese];
+
+      // Click handler: plays the file in data-src. If same file playing, toggles pause/play.
+      buttons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const src = btn.getAttribute('data-src') || '';
+          if (!src) {
+            setStatus('Audio path not set for "' + btn.textContent.trim() + '". Add an MP3 path to the button\'s data-src attribute.');
+            return;
+          }
+
+          // If clicking the same source that's already loaded:
+          if (currentSrc === src) {
+            if (audio.paused) {
+              audio.play();
+              setStatus('Playing: ' + btn.textContent.trim());
+            } else {
+              audio.pause();
+              setStatus('Paused');
+            }
+            return;
+          }
+
+          // Different source selected: load and play it
+          audio.src = src;
+          currentSrc = src;
+          audio.currentTime = 0;
+          audio.play()
+            .then(() => {
+              setStatus('Playing: ' + btn.textContent.trim());
+            })
+            .catch(err => {
+              console.error('Playback error:', err);
+              setStatus('Unable to play audio. Check console for details.');
+            });
+        });
+      });
+
+      // Update status when audio ends
+      audio.addEventListener('ended', () => {
+        setStatus('Playback finished');
+      });
+
+      // Update status on pause
+      audio.addEventListener('pause', () => {
+        // if ended, "ended" event will handle
+        if (!audio.ended) setStatus('Paused');
+      });
+
+      audio.addEventListener('play', () => {
+        // keep status in sync
+      });
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      setupLangButtons();
+
+      // Optional: auto-show image if you prefer (commented out)
+      // showImage();
     });
   </script>
 </body>
 </html>
-
-
