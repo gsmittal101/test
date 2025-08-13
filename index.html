@@ -37,7 +37,7 @@
       cursor: pointer;
       transition: background-color 0.3s ease;
       display: inline-flex;
-      align-items: center; 
+      align-items: center;
       justify-content: center;
       margin-bottom: 20px;
     }
@@ -46,7 +46,6 @@
       background-color: #218838;
     }
 
-    /* New layout: image + language buttons side-by-side */
     #image-container {
       margin-top: 10px;
       display: block;
@@ -55,7 +54,7 @@
     .media-wrapper {
       display: flex;
       align-items: center;
-      gap: 24px; /* space between image and buttons */
+      gap: 24px;
       justify-content: center;
       flex-wrap: wrap;
     }
@@ -70,10 +69,9 @@
       display: block;
       user-select: none;
       -webkit-user-drag: none;
-      pointer-events: none; /* make sure image doesn't respond to clicks */
+      pointer-events: none;
     }
 
-    /* Buttons column beside image */
     .lang-buttons {
       display: flex;
       flex-direction: column;
@@ -92,6 +90,10 @@
       box-shadow: 0 6px 14px rgba(30,144,255,0.18);
       transition: transform 0.12s ease, box-shadow 0.12s ease;
       text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
     }
 
     .lang-btn:hover {
@@ -103,14 +105,19 @@
       transform: translateY(0);
     }
 
-    /* Small status text */
+    .icon {
+      width: 20px;
+      height: 20px;
+      fill: white;
+      pointer-events: none;
+    }
+
     #status {
       margin-top: 12px;
       color: #555;
       font-size: 0.95rem;
     }
 
-    /* Responsive */
     @media (max-width: 720px) {
       .media-wrapper {
         flex-direction: column;
@@ -127,29 +134,27 @@
   <div class="container">
     <h1>Let's Start the FUN..</h1>
 
-    <!-- original green play button (kept for initial action if you want) -->
     <button class="play-button" id="main-play-button" onclick="showImage()">
       <svg class="play-icon" viewBox="0 0 24 24" width="28" height="28" aria-hidden="true">
         <path d="M8 5v14l11-7z" fill="white"/>
       </svg>
     </button>
 
-    <!-- Image + Language Buttons -->
     <div id="image-container" style="display:none;">
       <div class="media-wrapper">
-        <!-- Image: no overlay/play/pause -->
         <img id="clickable-image" src="" alt="Image for audio playback">
 
-        <!-- Language buttons beside image -->
         <div class="lang-buttons" role="group" aria-label="Language audio controls">
-          <!-- Put your mp3 path in data-src or set later via JS -->
-          <button class="lang-btn" id="btn-english" data-src="">
+          <button class="lang-btn" id="btn-english" data-src="test/English_London_Bridge.mp3" aria-pressed="false">
+            <svg class="icon" viewBox="0 0 24 24" id="icon-english" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
             English
           </button>
-          <button class="lang-btn" id="btn-hindi" data-src="">
+          <button class="lang-btn" id="btn-hindi" data-src="test/Hindi.m4a" aria-pressed="false">
+            <svg class="icon" viewBox="0 0 24 24" id="icon-hindi" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
             Hindi
           </button>
-          <button class="lang-btn" id="btn-chinese" data-src="">
+          <button class="lang-btn" id="btn-chinese" data-src="test/London_bridge_Chinese.mp3" aria-pressed="false">
+            <svg class="icon" viewBox="0 0 24 24" id="icon-chinese" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
             Chinese
           </button>
         </div>
@@ -158,100 +163,117 @@
       <div id="status" aria-live="polite"></div>
     </div>
 
-    <!-- single audio player used by the three buttons -->
     <audio id="audio-player" preload="none"></audio>
   </div>
 
   <script>
-    // State to track playback
     const audio = document.getElementById('audio-player');
-    let currentSrc = '';
+    let currentBtn = null;
 
-    // Show image when main button clicked
     function showImage() {
       const img = document.getElementById('clickable-image');
       img.src = "https://media.istockphoto.com/id/104643947/photo/tower-bridge-london.jpg?s=612x612&w=0&k=20&c=tZWOBJv3mlRJ5R3tJ_NCXEKoLvhcYXv_Y_7uCD6h0Ls=";
-
-      // Show container and hide the green button
       document.getElementById('image-container').style.display = 'block';
       document.getElementById('main-play-button').style.display = 'none';
     }
 
-    // Utility: set status text
     function setStatus(text) {
-      const status = document.getElementById('status');
-      status.textContent = text || '';
+      document.getElementById('status').textContent = text || '';
     }
 
-    // Wire up the language buttons
+    function setIconPlay(svgIcon) {
+      svgIcon.innerHTML = '<path d="M8 5v14l11-7z"/>'; // Play icon
+    }
+
+    function setIconPause(svgIcon) {
+      svgIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>'; // Pause icon
+    }
+
+    function resetAllButtons() {
+      const buttons = document.querySelectorAll('.lang-btn');
+      buttons.forEach(btn => {
+        btn.setAttribute('aria-pressed', 'false');
+        const icon = btn.querySelector('svg.icon');
+        setIconPlay(icon);
+      });
+    }
+
+    function togglePlayPause(button) {
+      const src = button.getAttribute('data-src');
+      if (!src) {
+        setStatus('Audio path not set for ' + button.textContent.trim());
+        return;
+      }
+      const icon = button.querySelector('svg.icon');
+
+      // If clicked button is currently playing
+      if (currentBtn === button) {
+        if (!audio.paused) {
+          audio.pause();
+          setIconPlay(icon);
+          button.setAttribute('aria-pressed', 'false');
+          setStatus('Paused');
+        } else {
+          audio.play();
+          setIconPause(icon);
+          button.setAttribute('aria-pressed', 'true');
+          setStatus('Playing: ' + button.textContent.trim());
+        }
+      } else {
+        // Another button clicked, stop previous and play new
+        if (currentBtn) {
+          const prevIcon = currentBtn.querySelector('svg.icon');
+          setIconPlay(prevIcon);
+          currentBtn.setAttribute('aria-pressed', 'false');
+        }
+        audio.src = src;
+        audio.currentTime = 0;
+        audio.play()
+          .then(() => {
+            setIconPause(icon);
+            button.setAttribute('aria-pressed', 'true');
+            setStatus('Playing: ' + button.textContent.trim());
+          })
+          .catch(err => {
+            console.error('Playback error:', err);
+            setStatus('Unable to play audio.');
+          });
+        currentBtn = button;
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      setupLangButtons();
+    });
+
     function setupLangButtons() {
-      const btnEnglish = document.getElementById('btn-english');
-      const btnHindi = document.getElementById('btn-hindi');
-      const btnChinese = document.getElementById('btn-chinese');
-
-      const buttons = [btnEnglish, btnHindi, btnChinese];
-
-      // Click handler: plays the file in data-src. If same file playing, toggles pause/play.
+      const buttons = document.querySelectorAll('.lang-btn');
       buttons.forEach(btn => {
         btn.addEventListener('click', () => {
-          const src = btn.getAttribute('data-src') || '';
-          if (!src) {
-            setStatus('Audio path not set for "' + btn.textContent.trim() + '". Add an MP3 path to the button\'s data-src attribute.');
-            return;
-          }
-
-          // If clicking the same source that's already loaded:
-          if (currentSrc === src) {
-            if (audio.paused) {
-              audio.play();
-              setStatus('Playing: ' + btn.textContent.trim());
-            } else {
-              audio.pause();
-              setStatus('Paused');
-            }
-            return;
-          }
-
-          // Different source selected: load and play it
-          audio.src = src;
-          currentSrc = src;
-          audio.currentTime = 0;
-          audio.play()
-            .then(() => {
-              setStatus('Playing: ' + btn.textContent.trim());
-            })
-            .catch(err => {
-              console.error('Playback error:', err);
-              setStatus('Unable to play audio. Check console for details.');
-            });
+          togglePlayPause(btn);
         });
       });
 
-      // Update status when audio ends
       audio.addEventListener('ended', () => {
-        setStatus('Playback finished');
+        if (currentBtn) {
+          const icon = currentBtn.querySelector('svg.icon');
+          setIconPlay(icon);
+          currentBtn.setAttribute('aria-pressed', 'false');
+          setStatus('Playback finished');
+          currentBtn = null;
+        }
       });
 
-      // Update status on pause
       audio.addEventListener('pause', () => {
-        // if ended, "ended" event will handle
-        if (!audio.ended) setStatus('Paused');
-      });
-
-      audio.addEventListener('play', () => {
-        // keep status in sync
+        // If audio is paused but not ended, update status & icon accordingly
+        if (!audio.ended && currentBtn) {
+          const icon = currentBtn.querySelector('svg.icon');
+          setIconPlay(icon);
+          currentBtn.setAttribute('aria-pressed', 'false');
+          setStatus('Paused');
+        }
       });
     }
-
-    // Initialize
-    document.addEventListener('DOMContentLoaded', () => {
-      setupLangButtons();
-
-      // Optional: auto-show image if you prefer (commented out)
-      // showImage();
-    });
   </script>
 </body>
 </html>
-
-
