@@ -134,34 +134,32 @@
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>You must be near to ...</h1>
+  <div id="image-container" style="display:none;">
+  <div class="media-wrapper">
+    <!-- First image -->
+    <img id="clickable-image" src="" alt="Image for audio playback">
 
-    <button class="play-button" id="main-play-button" onclick="showImage()">
-      <svg class="play-icon" viewBox="0 0 24 24" width="28" height="28" aria-hidden="true">
-        <path d="M8 5v14l11-7z" fill="white"/>
-      </svg>
-    </button>
+    <!-- Second image -->
+    <img id="clickable-image-2" src="" alt="Second image" style="max-width:360px; width:100%; border-radius:10px; box-shadow:0 6px 18px rgba(0,0,0,0.12); object-fit:cover; display:block; user-select:none; -webkit-user-drag:none; pointer-events:none;">
 
-    <div id="image-container" style="display:none;">
-      <div class="media-wrapper">
-        <img id="clickable-image" src="" alt="Image for audio playback">
+    <div class="lang-buttons" role="group" aria-label="Language audio controls">
+      <button class="lang-btn" id="btn-english" data-src="https://raw.githubusercontent.com/gsmittal101/test/main/English_London_Bridge.mp3" aria-pressed="false">
+        <svg class="icon" viewBox="0 0 24 24" id="icon-english" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+        English
+      </button>
+      <button class="lang-btn" id="btn-hindi" data-src="https://raw.githubusercontent.com/gsmittal101/test/main/Hindi.m4a" aria-pressed="false">
+        <svg class="icon" viewBox="0 0 24 24" id="icon-hindi" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+        Hindi
+      </button>
+      <button class="lang-btn" id="btn-chinese" data-src="https://raw.githubusercontent.com/gsmittal101/test/main/London_bridge_Chinese.mp3" aria-pressed="false">
+        <svg class="icon" viewBox="0 0 24 24" id="icon-chinese" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+        Chinese
+      </button>
+    </div>
+  </div>
 
-        <div class="lang-buttons" role="group" aria-label="Language audio controls">
-          <button class="lang-btn" id="btn-english" data-src="https://raw.githubusercontent.com/gsmittal101/test/main/English_London_Bridge.mp3" aria-pressed="false">
-            <svg class="icon" viewBox="0 0 24 24" id="icon-english" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
-            English
-          </button>
-          <button class="lang-btn" id="btn-hindi" data-src="https://raw.githubusercontent.com/gsmittal101/test/main/Hindi.m4a" aria-pressed="false">
-            <svg class="icon" viewBox="0 0 24 24" id="icon-hindi" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
-            Hindi
-          </button>
-          <button class="lang-btn" id="btn-chinese" data-src="https://raw.githubusercontent.com/gsmittal101/test/main/London_bridge_Chinese.mp3" aria-pressed="false">
-            <svg class="icon" viewBox="0 0 24 24" id="icon-chinese" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
-            Chinese
-          </button>
-        </div>
-      </div>
+  <div id="status" aria-live="polite"></div>
+</div>
 
       <div id="status" aria-live="polite"></div>
     </div>
@@ -173,12 +171,16 @@
     const audio = document.getElementById('audio-player');
     let currentBtn = null;
 
-    function showImage() {
-      const img = document.getElementById('clickable-image');
-      img.src = "https://media.istockphoto.com/id/104643947/photo/tower-bridge-london.jpg?s=612x612&w=0&k=20&c=tZWOBJv3mlRJ5R3tJ_NCXEKoLvhcYXv_Y_7uCD6h0Ls=";
-      document.getElementById('image-container').style.display = 'block';
-      document.getElementById('main-play-button').style.display = 'none';
-    }
+  function showImage() {
+  const img1 = document.getElementById('clickable-image');
+  const img2 = document.getElementById('clickable-image-2');
+
+  img1.src = "https://media.istockphoto.com/id/104643947/photo/tower-bridge-london.jpg?s=612x612&w=0&k=20&c=tZWOBJv3mlRJ5R3tJ_NCXEKoLvhcYXv_Y_7uCD6h0Ls=";
+  img2.src = "https://media.istockphoto.com/id/1170370305/photo/london-bridge-and-city-skyscrapers.jpg?s=612x612&w=0&k=20&c=2czU_U_gTxj5Hx1EibMEzJSMBMQcW8sbnGL8P1lTi7E=";
+
+  document.getElementById('image-container').style.display = 'block';
+  document.getElementById('main-play-button').style.display = 'none';
+}
 
     function setStatus(text) {
       document.getElementById('status').textContent = text || '';
@@ -277,3 +279,4 @@
   </script>
 </body>
 </html>
+
