@@ -1,282 +1,40 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>START THE FUN</title>
-  <style>
-    html, body {
-      height: 100%;
-      margin: 0;
-    }
-
-    body {
-      display: flex;
-      align-items: flex-start;   /* align to top */
-      justify-content: center;   /* center horizontally */
-      background-color: #f0f0f0;
-      font-family: Arial, sans-serif;
-    }
-
-    .container {
-      text-align: center;
-      height: 30vh;              /* lock to 30% of viewport height */
-      display: flex;
-      flex-direction: column;
-      justify-content: center;   /* center inside the 30% block */
-    }
-
-    h1 {
-      font-weight: bold;
-      color: #333;
-      margin-bottom: 20px;
-      font-size: 3em;
-    }
-
-    .play-button {
-      background-color: #28a745;
-      border: none;
-      border-radius: 30px;
-      padding: 20px 40px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 20px;
-    }
-
-    .play-button:hover {
-      background-color: #218838;
-    }
-
-    #image-container {
-      margin-top: 10px;
-      display: block;
-    }
-
-    .media-wrapper {
-      display: flex;
-      align-items: center;
-      gap: 24px;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-
-    #clickable-image {
-      max-width: 360px;
-      width: 100%;
-      height: auto;
-      border-radius: 10px;
-      box-shadow: 0 6px 18px rgba(0,0,0,0.12);
-      object-fit: cover;
-      display: block;
-      user-select: none;
-      -webkit-user-drag: none;
-      pointer-events: none;
-    }
-
-    .lang-buttons {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      align-items: stretch;
-    }
-
-    .lang-btn {
-      background: linear-gradient(180deg, #3aa0ff 0%, #1e90ff 100%);
-      color: #fff;
-      border: none;
-      padding: 14px 22px;
-      border-radius: 12px;
-      font-size: 1.05rem;
-      cursor: pointer;
-      box-shadow: 0 6px 14px rgba(30,144,255,0.18);
-      transition: transform 0.12s ease, box-shadow 0.12s ease;
-      text-align: center;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-
-    .lang-btn:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 10px 24px rgba(30,144,255,0.22);
-    }
-
-    .lang-btn:active {
-      transform: translateY(0);
-    }
-
-    .icon {
-      width: 20px;
-      height: 20px;
-      fill: white;
-      pointer-events: none;
-    }
-
-    #status {
-      margin-top: 12px;
-      color: #555;
-      font-size: 0.95rem;
-    }
-
-    @media (max-width: 720px) {
-      .media-wrapper {
-        flex-direction: column;
-      }
-      .lang-buttons {
-        flex-direction: row;
-        gap: 10px;
-      }
-      .lang-btn { flex: 1; }
-    }
-  </style>
-</head>
-<body>
-  <div id="image-container" style="display:none;">
-  <div class="media-wrapper">
-    <!-- First image -->
-    <img id="clickable-image" src="" alt="Image for audio playback">
-
-    <!-- Second image -->
-    <img id="clickable-image-2" src="" alt="Second image" style="max-width:360px; width:100%; border-radius:10px; box-shadow:0 6px 18px rgba(0,0,0,0.12); object-fit:cover; display:block; user-select:none; -webkit-user-drag:none; pointer-events:none;">
-
-    <div class="lang-buttons" role="group" aria-label="Language audio controls">
-      <button class="lang-btn" id="btn-english" data-src="https://raw.githubusercontent.com/gsmittal101/test/main/English_London_Bridge.mp3" aria-pressed="false">
-        <svg class="icon" viewBox="0 0 24 24" id="icon-english" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
-        English
-      </button>
-      <button class="lang-btn" id="btn-hindi" data-src="https://raw.githubusercontent.com/gsmittal101/test/main/Hindi.m4a" aria-pressed="false">
-        <svg class="icon" viewBox="0 0 24 24" id="icon-hindi" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
-        Hindi
-      </button>
-      <button class="lang-btn" id="btn-chinese" data-src="https://raw.githubusercontent.com/gsmittal101/test/main/London_bridge_Chinese.mp3" aria-pressed="false">
-        <svg class="icon" viewBox="0 0 24 24" id="icon-chinese" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
-        Chinese
-      </button>
-    </div>
-  </div>
-
-  <div id="status" aria-live="polite"></div>
-</div>
-
-      <div id="status" aria-live="polite"></div>
-    </div>
-
-    <audio id="audio-player" preload="none"></audio>
-  </div>
-
-  <script>
-    const audio = document.getElementById('audio-player');
-    let currentBtn = null;
-
-  function showImage() {
-  const img1 = document.getElementById('clickable-image');
-  const img2 = document.getElementById('clickable-image-2');
-
-  img1.src = "https://media.istockphoto.com/id/104643947/photo/tower-bridge-london.jpg?s=612x612&w=0&k=20&c=tZWOBJv3mlRJ5R3tJ_NCXEKoLvhcYXv_Y_7uCD6h0Ls=";
-  img2.src = "https://media.istockphoto.com/id/1170370305/photo/london-bridge-and-city-skyscrapers.jpg?s=612x612&w=0&k=20&c=2czU_U_gTxj5Hx1EibMEzJSMBMQcW8sbnGL8P1lTi7E=";
-
-  document.getElementById('image-container').style.display = 'block';
-  document.getElementById('main-play-button').style.display = 'none';
-}
-
-    function setStatus(text) {
-      document.getElementById('status').textContent = text || '';
-    }
-
-    function setIconPlay(svgIcon) {
-      svgIcon.innerHTML = '<path d="M8 5v14l11-7z"/>'; // Play icon
-    }
-
-    function setIconPause(svgIcon) {
-      svgIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>'; // Pause icon
-    }
-
-    function resetAllButtons() {
-      const buttons = document.querySelectorAll('.lang-btn');
-      buttons.forEach(btn => {
-        btn.setAttribute('aria-pressed', 'false');
-        const icon = btn.querySelector('svg.icon');
-        setIconPlay(icon);
-      });
-    }
-
-    function togglePlayPause(button) {
-      const src = button.getAttribute('data-src');
-      if (!src) {
-        setStatus('Audio path not set for ' + button.textContent.trim());
-        return;
-      }
-      const icon = button.querySelector('svg.icon');
-
-      if (currentBtn === button) {
-        if (!audio.paused) {
-          audio.pause();
-          setIconPlay(icon);
-          button.setAttribute('aria-pressed', 'false');
-          setStatus('Paused');
-        } else {
-          audio.play();
-          setIconPause(icon);
-          button.setAttribute('aria-pressed', 'true');
-          setStatus('Playing: ' + button.textContent.trim());
-        }
-      } else {
-        if (currentBtn) {
-          const prevIcon = currentBtn.querySelector('svg.icon');
-          setIconPlay(prevIcon);
-          currentBtn.setAttribute('aria-pressed', 'false');
-        }
-        audio.src = src;
-        audio.currentTime = 0;
-        audio.play()
-          .then(() => {
-            setIconPause(icon);
-            button.setAttribute('aria-pressed', 'true');
-            setStatus('Playing: ' + button.textContent.trim());
-          })
-          .catch(err => {
-            console.error('Playback error:', err);
-            setStatus('Unable to play audio.');
-          });
-        currentBtn = button;
-      }
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      setupLangButtons();
-    });
-
-    function setupLangButtons() {
-      const buttons = document.querySelectorAll('.lang-btn');
-      buttons.forEach(btn => {
-        btn.addEventListener('click', () => {
-          togglePlayPause(btn);
-        });
-      });
-
-      audio.addEventListener('ended', () => {
-        if (currentBtn) {
-          const icon = currentBtn.querySelector('svg.icon');
-          setIconPlay(icon);
-          currentBtn.setAttribute('aria-pressed', 'false');
-          setStatus('Playback finished');
-          currentBtn = null;
-        }
-      });
-
-      audio.addEventListener('pause', () => {
-        if (!audio.ended && currentBtn) {
-          const icon = currentBtn.querySelector('svg.icon');
-          setIconPlay(icon);
-          currentBtn.setAttribute('aria-pressed', 'false');
-          setStatus('Paused');
-        }
-      });
-    }
-  </script>
-</body>
-</html>
-
+	<head>
+		<meta charset="UTF-8"/>
+		<title>START THE FUN</title>
+		<style> html, body { height: 100%; margin: 0; } body { display: flex; align-items: flex-start; /* align to top */ justify-content: center; /* center horizontally */ background-color: #f0f0f0; font-family: Arial, sans-serif; } .container { text-align: center; height: 30vh; /* lock to 30% of viewport height */ display: flex; flex-direction: column; justify-content: center; /* center inside the 30% block */ } h1 { font-weight: bold; color: #333; margin-bottom: 20px; font-size: 3em; } .play-button { background-color: #28a745; border: none; border-radius: 30px; padding: 20px 40px; cursor: pointer; transition: background-color 0.3s ease; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 20px; } .play-button:hover { background-color: #218838; } #image-container { margin-top: 10px; display: block; } .media-wrapper { display: flex; align-items: center; gap: 24px; justify-content: center; flex-wrap: wrap; } #clickable-image { max-width: 360px; width: 100%; height: auto; border-radius: 10px; box-shadow: 0 6px 18px rgba(0,0,0,0.12); object-fit: cover; display: block; user-select: none; -webkit-user-drag: none; pointer-events: none; } .lang-buttons { display: flex; flex-direction: column; gap: 14px; align-items: stretch; } .lang-btn { background: linear-gradient(180deg, #3aa0ff 0%, #1e90ff 100%); color: #fff; border: none; padding: 14px 22px; border-radius: 12px; font-size: 1.05rem; cursor: pointer; box-shadow: 0 6px 14px rgba(30,144,255,0.18); transition: transform 0.12s ease, box-shadow 0.12s ease; text-align: center; display: flex; align-items: center; justify-content: center; gap: 8px; } .lang-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 24px rgba(30,144,255,0.22); } .lang-btn:active { transform: translateY(0); } .icon { width: 20px; height: 20px; fill: white; pointer-events: none; } #status { margin-top: 12px; color: #555; font-size: 0.95rem; } @media (max-width: 720px) { .media-wrapper { flex-direction: column; } .lang-buttons { flex-direction: row; gap: 10px; } .lang-btn { flex: 1; } } </style>
+	</head>
+	<body>
+		<div class="container">
+			<h1>You must be near to ...</h1>
+			<button class="play-button" id="main-play-button" onclick="showImage()">
+				<svg class="play-icon" viewBox="0 0 24 24" width="28" height="28" aria-hidden="true">
+					<path d="M8 5v14l11-7z" fill="white"/>
+				</svg>
+			</button>
+			<div id="image-container" style="display:none;">
+				<div class="media-wrapper">
+					<img id="clickable-image" src="" alt="Image for audio playback">
+						<div class="lang-buttons" role="group" aria-label="Language audio controls">
+							<button class="lang-btn" id="btn-english" data-src="https://raw.githubusercontent.com/gsmittal101/test/main/English_London_Bridge.mp3" aria-pressed="false">
+								<svg class="icon" viewBox="0 0 24 24" id="icon-english" aria-hidden="true">
+									<path d="M8 5v14l11-7z"/>
+								</svg> English </button>
+							<button class="lang-btn" id="btn-hindi" data-src="https://raw.githubusercontent.com/gsmittal101/test/main/Hindi.m4a" aria-pressed="false">
+								<svg class="icon" viewBox="0 0 24 24" id="icon-hindi" aria-hidden="true">
+									<path d="M8 5v14l11-7z"/>
+								</svg> Hindi </button>
+							<button class="lang-btn" id="btn-chinese" data-src="https://raw.githubusercontent.com/gsmittal101/test/main/London_bridge_Chinese.mp3" aria-pressed="false">
+								<svg class="icon" viewBox="0 0 24 24" id="icon-chinese" aria-hidden="true">
+									<path d="M8 5v14l11-7z"/>
+								</svg> Chinese </button>
+						</div>
+					</div>
+					<div id="status" aria-live="polite"/>
+				</div>
+				<audio id="audio-player" preload="none"/>
+			</div>
+			<script> const audio = document.getElementById('audio-player'); let currentBtn = null; function showImage() { const img = document.getElementById('clickable-image'); img.src = "https://media.istockphoto.com/id/104643947/photo/tower-bridge-london.jpg?s=612x612&w=0&k=20&c=tZWOBJv3mlRJ5R3tJ_NCXEKoLvhcYXv_Y_7uCD6h0Ls="; document.getElementById('image-container').style.display = 'block'; document.getElementById('main-play-button').style.display = 'none'; } function setStatus(text) { document.getElementById('status').textContent = text || ''; } function setIconPlay(svgIcon) { svgIcon.innerHTML = '<path d="M8 5v14l11-7z"/>'; // Play icon } function setIconPause(svgIcon) { svgIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>'; // Pause icon } function resetAllButtons() { const buttons = document.querySelectorAll('.lang-btn'); buttons.forEach(btn => { btn.setAttribute('aria-pressed', 'false'); const icon = btn.querySelector('svg.icon'); setIconPlay(icon); }); } function togglePlayPause(button) { const src = button.getAttribute('data-src'); if (!src) { setStatus('Audio path not set for ' + button.textContent.trim()); return; } const icon = button.querySelector('svg.icon'); if (currentBtn === button) { if (!audio.paused) { audio.pause(); setIconPlay(icon); button.setAttribute('aria-pressed', 'false'); setStatus('Paused'); } else { audio.play(); setIconPause(icon); button.setAttribute('aria-pressed', 'true'); setStatus('Playing: ' + button.textContent.trim()); } } else { if (currentBtn) { const prevIcon = currentBtn.querySelector('svg.icon'); setIconPlay(prevIcon); currentBtn.setAttribute('aria-pressed', 'false'); } audio.src = src; audio.currentTime = 0; audio.play() .then(() => { setIconPause(icon); button.setAttribute('aria-pressed', 'true'); setStatus('Playing: ' + button.textContent.trim()); }) .catch(err => { console.error('Playback error:', err); setStatus('Unable to play audio.'); }); currentBtn = button; } } document.addEventListener('DOMContentLoaded', () => { setupLangButtons(); }); function setupLangButtons() { const buttons = document.querySelectorAll('.lang-btn'); buttons.forEach(btn => { btn.addEventListener('click', () => { togglePlayPause(btn); }); }); audio.addEventListener('ended', () => { if (currentBtn) { const icon = currentBtn.querySelector('svg.icon'); setIconPlay(icon); currentBtn.setAttribute('aria-pressed', 'false'); setStatus('Playback finished'); currentBtn = null; } }); audio.addEventListener('pause', () => { if (!audio.ended && currentBtn) { const icon = currentBtn.querySelector('svg.icon'); setIconPlay(icon); currentBtn.setAttribute('aria-pressed', 'false'); setStatus('Paused'); } }); } </script>
+		</body>
+	</html>
