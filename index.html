@@ -11,9 +11,8 @@
 
     body {
       display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
+      align-items: flex-start;   /* align to top */
+      justify-content: center;   /* center horizontally */
       background-color: #f0f0f0;
       font-family: Arial, sans-serif;
     }
@@ -122,25 +121,6 @@
       font-size: 0.95rem;
     }
 
-    /* ✅ Gallery section */
-    .lower-gallery {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr); /* 2 per row */
-      gap: 16px;
-      padding: 20px;
-      max-width: 800px;
-      width: 100%;
-      margin: 0 auto 40px;
-    }
-
-    .lower-gallery img {
-      width: 100%;
-      height: auto;
-      border-radius: 14px; /* smooth corners */
-      box-shadow: 0 4px 10px rgba(0,0,0,0.12);
-      object-fit: cover;
-    }
-
     @media (max-width: 720px) {
       .media-wrapper {
         flex-direction: column;
@@ -150,9 +130,6 @@
         gap: 10px;
       }
       .lang-btn { flex: 1; }
-      .lower-gallery {
-        grid-template-columns: 1fr; /* stack images on small screens */
-      }
     }
   </style>
 </head>
@@ -191,14 +168,6 @@
 
     <audio id="audio-player" preload="none"></audio>
   </div>
-
-  <!-- ✅ Gallery Section
-  <div class="lower-gallery">
-    <img src="https://images.squarespace-cdn.com/content/v1/597610d6d2b85704bb5e4f8a/ad9a2d70-407e-4483-93b4-608e0a721a51/ST5.jpg" alt="London Bridge walking scene">
-    <img src="https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.shutterstock.com%2Fsearch%2Ftaking-photo-london&psig=AOvVaw2JybGj3GTDzF8Bcb8Y3mLW&ust=1755405722180000&source=images&cd=vfe&opi=89978449&ved=0CBUQjRxqFwoTCOidjofCjo8DFQAAAAAdAAAAABBH" alt="London Bridge walking photo">
-    <img src="https://st3.depositphotos.com/30909842/35635/i/1600/depositphotos_356359330-stock-photo-guy-on-city-trip-in.jpg" alt="Guy city trip image">
-    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT2gIyDApofoS_cW5sHTRFnXHjb0DHoRgboaw&s" alt="Miscellaneous London image">
-  </div> -->
 
   <script>
     const audio = document.getElementById('audio-player');
@@ -308,6 +277,3 @@
   </script>
 </body>
 </html>
-
-
-
